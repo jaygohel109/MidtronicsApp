@@ -2,9 +2,11 @@ package com.manikbora.multiscreenapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.text.HtmlCompat
+import com.bumptech.glide.Glide
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -26,7 +28,7 @@ class CountryDetailActivity : AppCompatActivity() {
     private fun fetchCountryData(countryName: String) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("https://restcountries.com/v3.1/name/$countryName")
+            .url("https://restcountries.com/v3.1/name/$countryName?fullText=true")
             .build()
 
         client.newCall(request).enqueue(object : Callback {
@@ -45,6 +47,7 @@ class CountryDetailActivity : AppCompatActivity() {
                     val area = country.getString("area")
                     val region = country.getString("region")
                     val subRegion = country.getString("subregion")
+                    val flagUrl = country.getJSONObject("flags").getString("png")
 
                     runOnUiThread {
                         findViewById<TextView>(R.id.textViewCountryName).text = countryName
@@ -53,6 +56,9 @@ class CountryDetailActivity : AppCompatActivity() {
                         findViewById<TextView>(R.id.textViewArea).text = HtmlCompat.fromHtml("<b>Area:</b> $area", HtmlCompat.FROM_HTML_MODE_LEGACY)
                         findViewById<TextView>(R.id.textViewRegion).text = HtmlCompat.fromHtml("<b>Region:</b> $region", HtmlCompat.FROM_HTML_MODE_LEGACY)
                         findViewById<TextView>(R.id.textViewSubRegion).text = HtmlCompat.fromHtml("<b>SubRegion:</b> $subRegion", HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+                        val imageViewFlag = findViewById<ImageView>(R.id.imageViewFlag)
+                        Glide.with(applicationContext).load(flagUrl).into(imageViewFlag)
                         // Set other TextViews similarly
                     }
                 }
